@@ -1,23 +1,33 @@
 package com.mrcrayfish.furniture.gui.containers;
 
+import com.gamerforea.mrcrayfishfurniture.ContainerItem;
 import com.mrcrayfish.furniture.gui.slots.SlotEnvelope;
+import com.mrcrayfish.furniture.items.IMail;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerEnvelope extends Container
+// TODO gamerforEA extend ContainerItem, old class: Container
+public class ContainerEnvelope extends ContainerItem
 {
 	private int numRows;
 
 	// TODO gamerforEA code start
 	public final IInventory envelopeInventory;
+
+	@Override
+	protected boolean isValidItem(ItemStack stack)
+	{
+		return stack.getItem() instanceof IMail;
+	}
 	// TODO gamerforEA code end
 
 	public ContainerEnvelope(IInventory playerInventory, IInventory envelopeInventory)
 	{
 		// TODO gamerforEA code start
+		super((InventoryPlayer) playerInventory);
 		this.envelopeInventory = envelopeInventory;
 		// TODO gamerforEA code end
 
@@ -41,21 +51,31 @@ public class ContainerEnvelope extends Container
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer par1EntityPlayer)
+	public boolean canInteractWith(EntityPlayer player)
 	{
-		return true;
+		// TODO gamerforEA code replace, old code:
+		// return true;
+		return super.canInteractWith(player);
+		// TODO gamerforEA code end
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2)
+	public ItemStack transferStackInSlot(EntityPlayer player, int slot)
 	{
+		// TODO gamerforEA code start
+		if (slot == this.getCurrentItemSlot())
+			return null;
+		if (!this.canInteractWith(player))
+			return null;
+		// TODO gamerforEA code end
+
 		ItemStack var3 = null;
-		Slot var4 = (Slot) this.inventorySlots.get(par2);
+		Slot var4 = (Slot) this.inventorySlots.get(slot);
 		if (var4 != null && var4.getHasStack() && var4 instanceof SlotEnvelope)
 		{
 			ItemStack var5 = var4.getStack();
 			var3 = var5.copy();
-			if (par2 < 2)
+			if (slot < 2)
 			{
 				if (!this.mergeItemStack(var5, 2, this.inventorySlots.size(), true))
 					return null;
